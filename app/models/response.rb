@@ -1,6 +1,7 @@
 class Response < ActiveRecord::Base
   validates :respondent_id, :answer_choice_id, :presence => true
   validate :respondent_has_not_already_answered_question
+  validate :creator_must_not_answer_own_poll
   # add method to ensure uniqueness of respondent_id && answer_choice_id
 
   belongs_to(
@@ -18,20 +19,23 @@ class Response < ActiveRecord::Base
   )
 
   def respondent_has_not_already_answered_question
-    if existing_responses.empty? ||
+    unless existing_responses.empty? ||
       existing_responses.length == 1 &&
       existing_responses.first.id == self.id
-      return true
-    else
-      puts "Respondent has already answered that question!"
-      false
+      errors.add(:respondent_id, "Already answered question.")
     end
-
   end
 
   def creator_must_not_answer_own_poll
-    Poll.joins(:questions => [{ :answer_choices => [{ :responses => []}]}]).find(:respondent_id => :author_id)
-    #Poll.joins(:questions => (:answer_choices => (:responses => []))).where(:respondent_id => :author_id)
+    poll_author = self.answer_choice.question.poll.author
+
+    # Poll.joins("JOIN questions ON polls.id = questions.poll_id")
+#         .joins("JOIN answer_choices ON questions.id = answer_choices.question_id")
+#         .where("answer_choices.id = #{self.answer_choice_id}").first
+
+    if poll_author.id == self.respondent_id
+      errors.add(:respondent_id, "Can't answer own poll.")
+    end
   end
 
   def existing_responses
