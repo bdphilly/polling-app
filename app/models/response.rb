@@ -18,9 +18,20 @@ class Response < ActiveRecord::Base
   )
 
   def respondent_has_not_already_answered_question
-    true if existing_responses.empty? ||
+    if existing_responses.empty? ||
       existing_responses.length == 1 &&
       existing_responses.first.id == self.id
+      return true
+    else
+      puts "Respondent has already answered that question!"
+      false
+    end
+
+  end
+
+  def creator_must_not_answer_own_poll
+    Poll.joins(:questions => [{ :answer_choices => [{ :responses => []}]}]).find(:respondent_id => :author_id)
+    #Poll.joins(:questions => (:answer_choices => (:responses => []))).where(:respondent_id => :author_id)
   end
 
   def existing_responses
