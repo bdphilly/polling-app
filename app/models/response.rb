@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: responses
+#
+#  id               :integer          not null, primary key
+#  respondent_id    :integer          not null
+#  answer_choice_id :integer          not null
+#  created_at       :datetime
+#  updated_at       :datetime
+#
+
 class Response < ActiveRecord::Base
   validates :respondent_id, :answer_choice_id, :presence => true
   validate :respondent_has_not_already_answered_question
@@ -37,6 +48,8 @@ class Response < ActiveRecord::Base
       errors.add(:respondent_id, "Can't answer own poll.")
     end
   end
+
+  Private
 
   def existing_responses
     Response.find_by_sql([<<-SQL, self.respondent_id, self.answer_choice_id])
