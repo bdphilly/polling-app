@@ -15,4 +15,21 @@ class Question < ActiveRecord::Base
     :class_name => "AnswerChoice"
   )
 
+  def results
+
+    results_hash = Hash.new
+
+    answer_choices_with_response = self
+     .answer_choices
+     .select("answer_choices.*, COUNT(*) AS answer_choices_count")
+     .joins(:responses)
+     .group("answer_choices.id")
+
+     answer_choices_with_response.each do |answer_choice|
+       results_hash[answer_choice.answer_choice] = answer_choice.answer_choices_count
+     end
+
+     results_hash
+  end
+
 end

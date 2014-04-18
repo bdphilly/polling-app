@@ -20,6 +20,8 @@ c2 = AnswerChoice.create!(:answer_choice => "Robert Duvall", :question_id => q2.
 Response.create!(:respondent_id => ned.id, :answer_choice_id => c1.id)
 Response.create!(:respondent_id => ned.id, :answer_choice_id => b1.id)
 
+Response.create!(:respondent_id => susie.id, :answer_choice_id => b1.id)
+
 Response.create!(:respondent_id => buck.id, :answer_choice_id => b2.id)
 Response.create!(:respondent_id => buck.id, :answer_choice_id => c1.id)
 
